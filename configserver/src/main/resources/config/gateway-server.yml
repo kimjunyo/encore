@@ -1,0 +1,43 @@
+server:
+  port: 8072
+ 
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://eurekaserver:8070/eureka/
+      
+ 
+spring:
+  cloud:
+    loadbalancer.ribbon.enabled: false
+    gateway:
+      discovery.locator:
+        enabled: true
+        lowerCaseServiceId: true
+      routes:
+      - id: kbo-service
+        uri: lb://kbo-service
+        predicates:
+        - Path=/kbo/**
+        filters:
+        - RewritePath=/kbo/(?<path>.*), /$\{path}
+      - id: coffee-service
+        uri: lb://coffee-service
+        predicates:
+        - Path=/coffee/**
+        filters:
+        - RewritePath=/coffee/(?<path>.*), /$\{path}
+
+
+       
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        
+        
